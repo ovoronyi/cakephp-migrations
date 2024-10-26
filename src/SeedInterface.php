@@ -161,7 +161,7 @@ interface SeedInterface
      * @param array<string, mixed> $options Options
      * @return \Migrations\Db\Table
      */
-    public function table(string $tableName, array $options): Table;
+    public function table(string $tableName, array $options = []): Table;
 
     /**
      * Checks to see if the seed should be executed.
@@ -180,7 +180,8 @@ interface SeedInterface
      * for instance to respect foreign key constraints.
      *
      * @param string $seeder Name of the seeder to call from the current seed
+     * @param array $options The CLI options for the seeder.
      * @return void
      */
-    public function call(string $seeder): void;
+    public function call(string $seeder, array $options = []): void;
 }

@@ -229,7 +229,7 @@ class SeedAdapter implements SeedInterface
     /**
      * {@inheritDoc}
      */
-    public function table(string $tableName, array $options): Table
+    public function table(string $tableName, array $options = []): Table
     {
         throw new RuntimeException('Not implemented');
     }
@@ -245,7 +245,7 @@ class SeedAdapter implements SeedInterface
     /**
      * {@inheritDoc}
      */
-    public function call(string $seeder): void
+    public function call(string $seeder, array $options = []): void
     {
         throw new RuntimeException('Not implemented');
     }
