@@ -109,6 +109,27 @@ class MigrateCommandTest extends TestCase
     }
 
     /**
+     * Integration test for BaseMigration with built-in backend.
+     */
+    public function testMigrateBaseMigration(): void
+    {
+        $migrationPath = ROOT . DS . 'config' . DS . 'BaseMigrations';
+        $this->exec('migrations migrate -v --source BaseMigrations -c test --no-lock');
+        $this->assertExitSuccess();
+
+        $this->assertOutputContains('<info>using connection</info> test');
+        $this->assertOutputContains('<info>using paths</info> ' . $migrationPath);
+        $this->assertOutputContains('BaseMigrationTables:</info> <comment>migrated');
+        $this->assertOutputContains('query=121');
+        $this->assertOutputContains('fetchRow=122');
+        $this->assertOutputContains('hasTable=1');
+        $this->assertOutputContains('All Done');
+
+        $table = $this->fetchTable('Phinxlog');
+        $this->assertCount(1, $table->find()->all()->toArray());
+    }
+
+    /**
      * Test that running with a no-op migrations is successful
      */
     public function testMigrateWithSourceMigration(): void
