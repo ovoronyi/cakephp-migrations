@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class TheDiffWithAutoIdIncompatibleSignedPrimaryKeysMysql extends AbstractMigration
+class TheDiffWithAutoIdIncompatibleSignedPrimaryKeysMysql extends BaseMigration
 {
     public bool $autoId = false;
 
@@ -11,7 +11,7 @@ class TheDiffWithAutoIdIncompatibleSignedPrimaryKeysMysql extends AbstractMigrat
      * Up Method.
      *
      * More information on this method is available here:
-     * https://book.cakephp.org/phinx/0/en/migrations.html#the-up-method
+     * https://book.cakephp.org/migrations/4/en/migrations.html#the-up-method
      * @return void
      */
     public function up(): void

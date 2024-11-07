@@ -18,6 +18,7 @@ namespace Migrations\Command;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use Cake\Core\Configure;
 use Cake\Database\Connection;
 use Cake\Database\Schema\CollectionInterface;
 use Cake\Database\Schema\TableSchema;
@@ -199,6 +200,7 @@ class BakeMigrationDiffCommand extends BakeSimpleMigrationCommand
             'data' => $this->templateData,
             'dumpSchema' => $this->dumpSchema,
             'currentSchema' => $this->currentSchema,
+            'backend' => Configure::read('Migrations.backend', 'builtin'),
         ];
     }
 
@@ -491,6 +493,7 @@ class BakeMigrationDiffCommand extends BakeSimpleMigrationCommand
 
         $newArgs = array_merge($newArgs, $this->parseOptions($args));
 
+        // TODO(mark) This nested command call always uses phinx backend.
         $exitCode = $this->executeCommand(BakeMigrationSnapshotCommand::class, $newArgs, $io);
 
         if ($exitCode === 1) {
@@ -519,6 +522,7 @@ class BakeMigrationDiffCommand extends BakeSimpleMigrationCommand
             $inputArgs['--plugin'] = $args->getOption('plugin');
         }
 
+        // TODO(mark) This has to change for the built-in backend
         $className = Dump::class;
         $definition = (new $className())->getDefinition();
 
