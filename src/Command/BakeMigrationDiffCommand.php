@@ -493,6 +493,7 @@ class BakeMigrationDiffCommand extends BakeSimpleMigrationCommand
 
         $newArgs = array_merge($newArgs, $this->parseOptions($args));
 
+        // TODO(mark) This nested command call always uses phinx backend.
         $exitCode = $this->executeCommand(BakeMigrationSnapshotCommand::class, $newArgs, $io);
 
         if ($exitCode === 1) {
@@ -521,6 +522,7 @@ class BakeMigrationDiffCommand extends BakeSimpleMigrationCommand
             $inputArgs['--plugin'] = $args->getOption('plugin');
         }
 
+        // TODO(mark) This has to change for the built-in backend
         $className = Dump::class;
         $definition = (new $className())->getDefinition();
 
