@@ -42,7 +42,7 @@ class ColumnParser
     /**
      * Parses a list of arguments into an array of fields
      *
-     * @param array<string> $arguments A list of arguments being parsed
+     * @param array<int, string> $arguments A list of arguments being parsed
      * @return array<string, array>
      */
     public function parseFields(array $arguments): array
@@ -95,7 +95,7 @@ class ColumnParser
     /**
      * Parses a list of arguments into an array of indexes
      *
-     * @param array<string> $arguments A list of arguments being parsed
+     * @param array<int, string> $arguments A list of arguments being parsed
      * @return array<string, array>
      */
     public function parseIndexes(array $arguments): array
@@ -144,7 +144,7 @@ class ColumnParser
      * Parses a list of arguments into an array of fields composing the primary key
      * of the table
      *
-     * @param array<string> $arguments A list of arguments being parsed
+     * @param array<int, string> $arguments A list of arguments being parsed
      * @return array<string>
      */
     public function parsePrimaryKey(array $arguments): array
