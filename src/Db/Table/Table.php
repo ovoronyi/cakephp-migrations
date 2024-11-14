@@ -12,7 +12,7 @@ use InvalidArgumentException;
 
 /**
  * @internal
- * @TODO rename this to `TableMetadata` having two classes with very similar names is confusing for me.
+ * @TODO rename this to `TableMetadata` having two classes with very similar names is confusing.
  */
 class Table
 {

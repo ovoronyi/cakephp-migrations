@@ -34,11 +34,6 @@ use RuntimeException;
 
 /**
  * This object is based loosely on: https://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/Table.html.
- *
- * TODO(mark) Having both Migrations\Db\Table and Migrations\Db\Table\Table seems redundant.
- * The table models should be joined together so that we have a simpler API exposed.
- *
- * @internal
  */
 class Table
 {
