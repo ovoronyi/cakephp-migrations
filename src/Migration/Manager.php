@@ -313,6 +313,7 @@ class Manager
             $versionArg = $args->getArgument('version');
         }
         $targetArg = $args->getOption('target');
+        // This is where version and target params are parsed.
         $hasAllVersion = in_array($versionArg, ['all', '*'], true);
         if ((empty($versionArg) && empty($targetArg)) || $hasAllVersion) {
             return $versions;

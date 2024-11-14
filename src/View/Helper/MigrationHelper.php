@@ -414,7 +414,7 @@ class MigrationHelper extends Helper
         }
 
         // TODO this can be cleaned up when we stop using phinx data structures for column definitions
-        if ($columnOptions['precision'] === null) {
+        if (!isset($columnOptions['precision']) || $columnOptions['precision'] === null) {
             unset($columnOptions['precision']);
         } else {
             // due to Phinx using different naming for the precision and scale to CakePHP
