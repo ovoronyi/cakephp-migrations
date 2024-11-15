@@ -83,6 +83,11 @@
       <code><![CDATA[ConfigurationTrait]]></code>
     </DeprecatedTrait>
   </file>
+  <file src="src/Command/SeedCommand.php">
+    <DeprecatedMethod>
+      <code><![CDATA[getMultipleOption]]></code>
+    </DeprecatedMethod>
+  </file>
   <file src="src/Config/ConfigInterface.php">
     <MissingTemplateParam>
       <code><![CDATA[ArrayAccess]]></code>
