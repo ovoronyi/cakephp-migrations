@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Migrations;
 
 use Cake\Core\Configure;
+use Cake\Database\Connection;
 use Cake\Datasource\ConnectionManager;
 use InvalidArgumentException;
 use Migrations\Migration\BuiltinBackend;
@@ -295,10 +296,10 @@ class Migrations
             return;
         }
 
-        /** @var string $connectionName */
         $connectionName = $this->input()->getOption('connection') ?: 'default';
-        /** @var \Cake\Database\Connection $connection */
+        assert(is_string($connectionName), 'Connection name must be a string');
         $connection = ConnectionManager::get($connectionName);
+        assert($connection instanceof Connection, 'Connection must be an instance of \Cake\Database\Connection');
 
         /** @psalm-suppress PossiblyNullReference */
         $env = $this->manager->getEnvironment('default');

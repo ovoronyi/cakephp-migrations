@@ -85,8 +85,8 @@ class Dump extends AbstractCommand
         $this->output($output);
 
         $path = $this->getOperationsPath($input);
-        /** @var string $connectionName */
         $connectionName = $input->getOption('connection') ?: 'default';
+        assert(is_string($connectionName), 'Connection name must be a string');
         $connection = ConnectionManager::get($connectionName);
         assert($connection instanceof Connection);
         $collection = $connection->getSchemaCollection();

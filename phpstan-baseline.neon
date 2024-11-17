@@ -1,71 +1,169 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Call to an undefined method object\\:\\:loadHelper\\(\\)\\.$#"
+			message: '#^Call to an undefined method object\:\:loadHelper\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: src/Command/BakeMigrationCommand.php
 
 		-
-			message: "#^Call to an undefined method object\\:\\:loadHelper\\(\\)\\.$#"
+			message: '#^Parameter \#1 \$arguments of method Migrations\\Util\\ColumnParser\:\:parseFields\(\) expects array\<string\>, array\<int\<min, \-1\>\|int\<1, max\>, list\<string\>\|string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Command/BakeMigrationCommand.php
+
+		-
+			message: '#^Parameter \#1 \$arguments of method Migrations\\Util\\ColumnParser\:\:parseIndexes\(\) expects array\<string\>, array\<int\<min, \-1\>\|int\<1, max\>, list\<string\>\|string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Command/BakeMigrationCommand.php
+
+		-
+			message: '#^Parameter \#1 \$arguments of method Migrations\\Util\\ColumnParser\:\:parsePrimaryKey\(\) expects array\<string\>, array\<int\<min, \-1\>\|int\<1, max\>, list\<string\>\|string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Command/BakeMigrationCommand.php
+
+		-
+			message: '#^Call to an undefined method object\:\:loadHelper\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: src/Command/BakeMigrationDiffCommand.php
 
 		-
-			message: "#^Call to an undefined method object\\:\\:loadHelper\\(\\)\\.$#"
+			message: '#^Call to an undefined method object\:\:loadHelper\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: src/Command/BakeMigrationSnapshotCommand.php
 
 		-
-			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			message: '#^PHPDoc tag @var with type string is not subtype of native type non\-falsy\-string\|true\.$#'
+			identifier: varTag.nativeType
+			count: 1
+			path: src/Command/BakeSeedCommand.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between string and false will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/Command/BakeSeedCommand.php
+
+		-
+			message: '#^Call to an undefined method Cake\\Datasource\\ConnectionInterface\:\:cacheMetadata\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Command/Phinx/CacheBuild.php
+
+		-
+			message: '#^Call to an undefined method Cake\\Datasource\\ConnectionInterface\:\:cacheMetadata\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Command/Phinx/CacheClear.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
 			count: 1
 			path: src/Db/Adapter/AdapterFactory.php
 
 		-
-			message: "#^Offset 'id' on non\\-empty\\-array\\<string, mixed\\> in isset\\(\\) always exists and is not nullable\\.$#"
+			message: '#^Offset ''id'' on non\-empty\-array\<string, mixed\> in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.offset
 			count: 2
 			path: src/Db/Adapter/MysqlAdapter.php
 
 		-
-			message: "#^Right side of && is always true\\.$#"
+			message: '#^Offset 3 might not exist on array\{0\: string, 1\: non\-empty\-string, 2\?\: string, 3\?\: ''''\|numeric\-string, 4\?\: string, 5\?\: ''''\|numeric\-string, 6\?\: non\-empty\-string\}\.$#'
+			identifier: offsetAccess.notFound
 			count: 1
 			path: src/Db/Adapter/MysqlAdapter.php
 
 		-
-			message: "#^Access to an undefined property Cake\\\\Database\\\\Connection\\:\\:\\$connection\\.$#"
+			message: '#^Offset 5 might not exist on array\{0\: string, 1\: non\-empty\-string, 2\?\: string, 3\?\: ''''\|numeric\-string, 4\?\: string, 5\?\: ''''\|numeric\-string, 6\?\: non\-empty\-string\}\.$#'
+			identifier: offsetAccess.notFound
 			count: 1
-			path: src/Db/Adapter/PdoAdapter.php
+			path: src/Db/Adapter/MysqlAdapter.php
 
 		-
-			message: "#^Offset 'id' on array\\<string, mixed\\> in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 2
-			path: src/Db/Adapter/PostgresAdapter.php
+			message: '#^Offset 6 might not exist on array\{0\: string, 1\: non\-empty\-string, 2\?\: string, 3\?\: ''''\|numeric\-string, 4\?\: string, 5\?\: ''''\|numeric\-string, 6\?\: non\-empty\-string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: src/Db/Adapter/MysqlAdapter.php
 
 		-
-			message: "#^Offset 'id' on array\\<string, mixed\\> in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 2
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: src/Db/Adapter/MysqlAdapter.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
 			path: src/Db/Adapter/SqliteAdapter.php
 
 		-
-			message: "#^Offset 'id' on array\\<string, mixed\\> in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 2
-			path: src/Db/Adapter/SqlserverAdapter.php
-
-		-
-			message: "#^PHPDoc tag @return with type Phinx\\\\Db\\\\Adapter\\\\AdapterInterface is not subtype of native type Migrations\\\\Db\\\\Adapter\\\\AdapterInterface\\.$#"
+			message: '#^PHPDoc tag @return with type Phinx\\Db\\Adapter\\AdapterInterface is not subtype of native type Migrations\\Db\\Adapter\\AdapterInterface\.$#'
+			identifier: return.phpDocType
 			count: 1
 			path: src/Db/Adapter/SqlserverAdapter.php
 
 		-
-			message: "#^Ternary operator condition is always true\\.$#"
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
 			count: 2
 			path: src/Db/Adapter/SqlserverAdapter.php
 
 		-
-			message: "#^Method Migrations\\\\Shim\\\\OutputAdapter\\:\\:getVerbosity\\(\\) should return 16\\|32\\|64\\|128\\|256 but returns int\\.$#"
+			message: '#^Parameter \#1 \$message of method Cake\\Console\\ConsoleIo\:\:verbose\(\) expects list\<string\>\|string, array\<non\-falsy\-string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Migration/Manager.php
+
+		-
+			message: '#^Parameter \#1 \.\.\.\$arg1 of function max expects non\-empty\-array, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Migration/Manager.php
+
+		-
+			message: '#^PHPDoc tag @var with type array\<string, string\> is not subtype of native type mixed\.$#'
+			identifier: varTag.nativeType
+			count: 1
+			path: src/Migration/ManagerFactory.php
+
+		-
+			message: '#^Method Migrations\\Shim\\OutputAdapter\:\:getVerbosity\(\) should return 16\|32\|64\|128\|256 but returns int\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Shim/OutputAdapter.php
 
 		-
-			message: "#^Possibly invalid array key type Cake\\\\Database\\\\Schema\\\\TableSchemaInterface\\|string\\.$#"
+			message: '#^Parameter \#1 \$message of method Cake\\Console\\ConsoleIo\:\:out\(\) expects list\<string\>\|string, array\|string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Shim/OutputAdapter.php
+
+		-
+			message: '#^Parameter \#2 \$tables of method Cake\\TestSuite\\ConnectionHelper\:\:dropTables\(\) expects list\<string\>\|null, non\-empty\-array\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/TestSuite/Migrator.php
+
+		-
+			message: '#^Parameter \#2 \$tables of method Cake\\TestSuite\\ConnectionHelper\:\:truncateTables\(\) expects list\<string\>\|null, non\-empty\-array\<string\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/TestSuite/Migrator.php
+
+		-
+			message: '#^Offset 0 on non\-empty\-list\<string\> in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.offset
+			count: 2
+			path: src/Util/TableFinder.php
+
+		-
+			message: '#^Possibly invalid array key type Cake\\Database\\Schema\\TableSchemaInterface\|string\.$#'
+			identifier: offsetAccess.invalidOffset
 			count: 2
 			path: src/View/Helper/MigrationHelper.php

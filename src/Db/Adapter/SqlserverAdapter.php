@@ -137,11 +137,11 @@ class SqlserverAdapter extends PdoAdapter
         $options = $table->getOptions();
 
         // Add the default primary key
-        if (!isset($options['id']) || (isset($options['id']) && $options['id'] === true)) {
+        if (!isset($options['id']) || $options['id'] === true) {
             $options['id'] = 'id';
         }
 
-        if (isset($options['id']) && is_string($options['id'])) {
+        if (is_string($options['id'])) {
             // Handle id => "field_name" to support AUTO_INCREMENT
             $column = new Column();
             $column->setName($options['id'])
