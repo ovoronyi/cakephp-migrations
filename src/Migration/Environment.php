@@ -154,9 +154,7 @@ class Environment
         }
 
         // Run the seeder
-        if (method_exists($seed, SeedInterface::RUN)) {
-            $seed->{SeedInterface::RUN}();
-        }
+        $seed->{SeedInterface::RUN}();
 
         // commit the transaction if the adapter supports it
         if ($atomic) {

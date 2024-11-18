@@ -30,8 +30,6 @@ use Symfony\Component\Console\Input\ArrayInput;
 
 /**
  * Task class for generating migration diff files.
- *
- * @property \Bake\Shell\Task\TestTask $Test
  */
 class BakeMigrationDiffCommand extends BakeSimpleMigrationCommand
 {

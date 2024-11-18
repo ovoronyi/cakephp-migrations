@@ -22,7 +22,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * @method \Migrations\CakeManager getManager()
+ * @method \Migrations\CakeManager|null getManager()
  */
 class MarkMigrated extends AbstractCommand
 {
