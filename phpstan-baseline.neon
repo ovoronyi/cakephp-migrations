@@ -7,24 +7,6 @@ parameters:
 			path: src/Command/BakeMigrationCommand.php
 
 		-
-			message: '#^Parameter \#1 \$arguments of method Migrations\\Util\\ColumnParser\:\:parseFields\(\) expects array\<string\>, array\<int\<min, \-1\>\|int\<1, max\>, list\<string\>\|string\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Command/BakeMigrationCommand.php
-
-		-
-			message: '#^Parameter \#1 \$arguments of method Migrations\\Util\\ColumnParser\:\:parseIndexes\(\) expects array\<string\>, array\<int\<min, \-1\>\|int\<1, max\>, list\<string\>\|string\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Command/BakeMigrationCommand.php
-
-		-
-			message: '#^Parameter \#1 \$arguments of method Migrations\\Util\\ColumnParser\:\:parsePrimaryKey\(\) expects array\<string\>, array\<int\<min, \-1\>\|int\<1, max\>, list\<string\>\|string\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Command/BakeMigrationCommand.php
-
-		-
 			message: '#^Call to an undefined method object\:\:loadHelper\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -59,6 +41,18 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: src/Command/Phinx/CacheClear.php
+
+		-
+			message: '#^Instanceof between Migrations\\CakeManager and Migrations\\CakeManager will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: src/Command/Phinx/MarkMigrated.php
+
+		-
+			message: '#^Instanceof between Migrations\\CakeManager and Migrations\\CakeManager will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: src/Command/Phinx/Status.php
 
 		-
 			message: '#^Unsafe usage of new static\(\)\.$#'
@@ -115,10 +109,10 @@ parameters:
 			path: src/Db/Adapter/SqlserverAdapter.php
 
 		-
-			message: '#^Parameter \#1 \$message of method Cake\\Console\\ConsoleIo\:\:verbose\(\) expects list\<string\>\|string, array\<non\-falsy\-string\> given\.$#'
-			identifier: argument.type
+			message: '#^Call to function method_exists\(\) with Migrations\\MigrationInterface and ''useTransactions'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
-			path: src/Migration/Manager.php
+			path: src/Migration/Environment.php
 
 		-
 			message: '#^Parameter \#1 \.\.\.\$arg1 of function max expects non\-empty\-array, array given\.$#'
@@ -137,24 +131,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: src/Shim/OutputAdapter.php
-
-		-
-			message: '#^Parameter \#1 \$message of method Cake\\Console\\ConsoleIo\:\:out\(\) expects list\<string\>\|string, array\|string given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Shim/OutputAdapter.php
-
-		-
-			message: '#^Parameter \#2 \$tables of method Cake\\TestSuite\\ConnectionHelper\:\:dropTables\(\) expects list\<string\>\|null, non\-empty\-array\<string\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/TestSuite/Migrator.php
-
-		-
-			message: '#^Parameter \#2 \$tables of method Cake\\TestSuite\\ConnectionHelper\:\:truncateTables\(\) expects list\<string\>\|null, non\-empty\-array\<string\> given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/TestSuite/Migrator.php
 
 		-
 			message: '#^Offset 0 on non\-empty\-list\<string\> in isset\(\) always exists and is not nullable\.$#'
