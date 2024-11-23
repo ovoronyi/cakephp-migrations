@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.25.0@01a8eb06b9e9cc6cfb6a320bf9fb14331919d505">
+<files psalm-version="5.26.1@d747f6500b38ac4f7dfc5edbcae6e4b637d7add0">
   <file src="src/AbstractSeed.php">
     <DeprecatedClass>
       <code><![CDATA[new Seed()]]></code>
@@ -59,10 +59,6 @@
     <DeprecatedTrait>
       <code><![CDATA[ConfigurationTrait]]></code>
     </DeprecatedTrait>
-    <PossiblyNullReference>
-      <code><![CDATA[getVersionsToMark]]></code>
-      <code><![CDATA[markVersionsAsMigrated]]></code>
-    </PossiblyNullReference>
   </file>
   <file src="src/Command/Phinx/Migrate.php">
     <DeprecatedTrait>
@@ -86,23 +82,6 @@
     <DeprecatedTrait>
       <code><![CDATA[ConfigurationTrait]]></code>
     </DeprecatedTrait>
-    <PossiblyNullArgument>
-      <code><![CDATA[$maxNameLength]]></code>
-    </PossiblyNullArgument>
-    <PossiblyNullPropertyFetch>
-      <code><![CDATA[$this->getManager()->maxNameLength]]></code>
-    </PossiblyNullPropertyFetch>
-    <PossiblyNullReference>
-      <code><![CDATA[getConfig]]></code>
-      <code><![CDATA[getOutput]]></code>
-      <code><![CDATA[getOutput]]></code>
-      <code><![CDATA[printStatus]]></code>
-    </PossiblyNullReference>
-  </file>
-  <file src="src/Command/SeedCommand.php">
-    <DeprecatedMethod>
-      <code><![CDATA[getMultipleOption]]></code>
-    </DeprecatedMethod>
   </file>
   <file src="src/Command/SeedCommand.php">
     <DeprecatedMethod>
@@ -171,12 +150,6 @@
   </file>
   <file src="src/Migration/Manager.php">
     <ArgumentTypeCoercion>
-      <code><![CDATA[array_map(
-                    function ($phpFile) {
-                        return "    <info>{$phpFile}</info>";
-                    },
-                    $phpFiles
-                )]]></code>
       <code><![CDATA[array_merge($versions, array_keys($migrations))]]></code>
     </ArgumentTypeCoercion>
     <RedundantPropertyInitializationCheck>
@@ -218,23 +191,12 @@
     </PossiblyNullReference>
   </file>
   <file src="src/Shim/OutputAdapter.php">
-    <ArgumentTypeCoercion>
-      <code><![CDATA[$messages]]></code>
-      <code><![CDATA[$messages]]></code>
-    </ArgumentTypeCoercion>
     <LessSpecificReturnStatement>
       <code><![CDATA[$this->io->level()]]></code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType>
       <code><![CDATA[self::VERBOSITY_*]]></code>
     </MoreSpecificReturnType>
-  </file>
-  <file src="src/TestSuite/Migrator.php">
-    <ArgumentTypeCoercion>
-      <code><![CDATA[$dropTables]]></code>
-      <code><![CDATA[$phinxTables]]></code>
-      <code><![CDATA[$tables]]></code>
-    </ArgumentTypeCoercion>
   </file>
   <file src="src/Util/ColumnParser.php">
     <ArgumentTypeCoercion>
