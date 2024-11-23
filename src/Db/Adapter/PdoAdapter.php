@@ -173,7 +173,6 @@ abstract class PdoAdapter extends AbstractAdapter implements DirectActionInterfa
             $this->connect();
         }
 
-        /** @var \Cake\Database\Connection $this->connection */
         return $this->connection;
     }
 

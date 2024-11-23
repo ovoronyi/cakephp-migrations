@@ -13,6 +13,7 @@ declare(strict_types=1);
  */
 namespace Migrations\Migration;
 
+use Cake\Database\Connection;
 use Cake\Datasource\ConnectionManager;
 use DateTime;
 use InvalidArgumentException;
@@ -339,10 +340,10 @@ class PhinxBackend implements BackendInterface
             return;
         }
 
-        /** @var string $connectionName */
         $connectionName = $this->input()->getOption('connection') ?: 'default';
-        /** @var \Cake\Database\Connection $connection */
+        assert(is_string($connectionName), 'Connection name should be a string');
         $connection = ConnectionManager::get($connectionName);
+        assert($connection instanceof Connection, 'Connection should be an instance of Cake\Database\Connection');
 
         /** @psalm-suppress PossiblyNullReference */
         $env = $this->manager->getEnvironment('default');
