@@ -39,7 +39,7 @@ class TimedOutputAdapter extends AdapterWrapper implements DirectActionInterface
 
         return function () use ($started): void {
             $end = microtime(true);
-            $this->getIo()?->out('    -> ' . sprintf('%.4fs', $end - $started));
+            $this->getIo()?->verbose('    -> ' . sprintf('%.4fs', $end - $started));
         };
     }
 

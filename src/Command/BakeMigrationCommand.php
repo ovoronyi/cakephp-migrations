@@ -76,12 +76,13 @@ class BakeMigrationCommand extends BakeSimpleMigrationCommand
             $pluginPath = $this->plugin . '.';
         }
 
-        $arguments = $arguments->getArguments();
-        unset($arguments[0]);
+        /** @var array<int, string> $args */
+        $args = $arguments->getArguments();
+        unset($args[0]);
         $columnParser = new ColumnParser();
-        $fields = $columnParser->parseFields($arguments);
-        $indexes = $columnParser->parseIndexes($arguments);
-        $primaryKey = $columnParser->parsePrimaryKey($arguments);
+        $fields = $columnParser->parseFields($args);
+        $indexes = $columnParser->parseIndexes($args);
+        $primaryKey = $columnParser->parsePrimaryKey($args);
 
         $action = $this->detectAction($className);
 
@@ -98,6 +99,7 @@ class BakeMigrationCommand extends BakeSimpleMigrationCommand
                 'tables' => [],
                 'action' => null,
                 'name' => $className,
+                'backend' => Configure::read('Migrations.backend', 'builtin'),
             ];
         }
 
@@ -120,6 +122,7 @@ class BakeMigrationCommand extends BakeSimpleMigrationCommand
                 'primaryKey' => $primaryKey,
             ],
             'name' => $className,
+            'backend' => Configure::read('Migrations.backend', 'builtin'),
         ];
     }
 

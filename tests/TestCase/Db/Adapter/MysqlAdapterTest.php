@@ -397,7 +397,7 @@ class MysqlAdapterTest extends TestCase
               ->save();
         $this->assertTrue($adapter->hasTable('table_with_default_collation'));
         $row = $adapter->fetchRow(sprintf("SHOW TABLE STATUS WHERE Name = '%s'", 'table_with_default_collation'));
-        $this->assertEquals('utf8mb4_unicode_ci', $row['Collation']);
+        $this->assertEquals('utf8mb4_0900_ai_ci', $row['Collation']);
     }
 
     public function testCreateTableWithLatin1Collate()
@@ -498,13 +498,13 @@ class MysqlAdapterTest extends TestCase
         $this->assertCount(3, $columns);
         $this->assertSame('id', $columns[0]->getName());
 
-        $this->assertEquals('created_at', $columns[1]->getName());
+        $this->assertEquals('created', $columns[1]->getName());
         $this->assertEquals('datetime', $columns[1]->getType());
         $this->assertEquals('', $columns[1]->getUpdate());
         $this->assertFalse($columns[1]->isNull());
         $this->assertEquals('CURRENT_TIMESTAMP', $columns[1]->getDefault());
 
-        $this->assertEquals('updated_at', $columns[2]->getName());
+        $this->assertEquals('updated', $columns[2]->getName());
         $this->assertEquals('datetime', $columns[2]->getType());
         $this->assertEquals('CURRENT_TIMESTAMP', $columns[2]->getUpdate());
         $this->assertTrue($columns[2]->isNull());
@@ -2037,6 +2037,37 @@ class MysqlAdapterTest extends TestCase
         $this->assertEquals('test', $rows[2]['column3']);
     }
 
+    public function testBulkInsertLiteral()
+    {
+        $data = [
+            [
+                'column1' => 'value1',
+                'column2' => Literal::from('CURRENT_TIMESTAMP'),
+            ],
+            [
+                'column1' => 'value2',
+                'column2' => '2024-01-01 00:00:00',
+            ],
+            [
+                'column1' => 'value3',
+                'column2' => '2025-01-01 00:00:00',
+            ],
+        ];
+        $table = new Table('table1', [], $this->adapter);
+        $table->addColumn('column1', 'string')
+            ->addColumn('column2', 'datetime')
+            ->insert($data)
+            ->save();
+
+        $rows = $this->adapter->fetchAll('SELECT * FROM table1');
+        $this->assertEquals('value1', $rows[0]['column1']);
+        $this->assertEquals('value2', $rows[1]['column1']);
+        $this->assertEquals('value3', $rows[2]['column1']);
+        $this->assertMatchesRegularExpression('/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}/', $rows[0]['column2']);
+        $this->assertEquals('2024-01-01 00:00:00', $rows[1]['column2']);
+        $this->assertEquals('2025-01-01 00:00:00', $rows[2]['column2']);
+    }
+
     public function testInsertData()
     {
         $data = [
@@ -2072,6 +2103,42 @@ class MysqlAdapterTest extends TestCase
         $this->assertEquals('foo', $rows[2]['column3']);
     }
 
+    public function testInsertLiteral()
+    {
+        $data = [
+            [
+                'column1' => 'value1',
+                'column3' => Literal::from('CURRENT_TIMESTAMP'),
+            ],
+            [
+                'column1' => 'value2',
+                'column3' => '2024-01-01 00:00:00',
+            ],
+            [
+                'column1' => 'value3',
+                'column2' => 'foo',
+                'column3' => '2025-01-01 00:00:00',
+            ],
+        ];
+        $table = new Table('table1', [], $this->adapter);
+        $table->addColumn('column1', 'string')
+            ->addColumn('column2', 'string', ['default' => 'test'])
+            ->addColumn('column3', 'datetime')
+            ->insert($data)
+            ->save();
+
+        $rows = $this->adapter->fetchAll('SELECT * FROM table1');
+        $this->assertEquals('value1', $rows[0]['column1']);
+        $this->assertEquals('value2', $rows[1]['column1']);
+        $this->assertEquals('value3', $rows[2]['column1']);
+        $this->assertEquals('test', $rows[0]['column2']);
+        $this->assertEquals('test', $rows[1]['column2']);
+        $this->assertEquals('foo', $rows[2]['column2']);
+        $this->assertMatchesRegularExpression('/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}/', $rows[0]['column3']);
+        $this->assertEquals('2024-01-01 00:00:00', $rows[1]['column3']);
+        $this->assertEquals('2025-01-01 00:00:00', $rows[2]['column3']);
+    }
+
     public function testDumpCreateTable()
     {
         $options = $this->adapter->getOptions();
@@ -2086,7 +2153,7 @@ class MysqlAdapterTest extends TestCase
             ->save();
 
         $expectedOutput = <<<'OUTPUT'
-CREATE TABLE `table1` (`id` INT(11) unsigned NOT NULL AUTO_INCREMENT, `column1` VARCHAR(255) NOT NULL, `column2` INT(11) NULL, `column3` VARCHAR(255) NOT NULL DEFAULT 'test', PRIMARY KEY (`id`)) ENGINE = InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE TABLE `table1` (`id` INT(11) unsigned NOT NULL AUTO_INCREMENT, `column1` VARCHAR(255) NOT NULL, `column2` INT(11) NULL, `column3` VARCHAR(255) NOT NULL DEFAULT 'test', PRIMARY KEY (`id`)) ENGINE = InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 OUTPUT;
         $actualOutput = join("\n", $this->out->messages());
         $this->assertStringContainsString($expectedOutput, $actualOutput, 'Passing the --dry-run option does not dump create table query to the output');
@@ -2191,7 +2258,7 @@ OUTPUT;
         ])->save();
 
         $expectedOutput = <<<'OUTPUT'
-CREATE TABLE `table1` (`column1` VARCHAR(255) NOT NULL, `column2` INT(11) NULL, PRIMARY KEY (`column1`)) ENGINE = InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE TABLE `table1` (`column1` VARCHAR(255) NOT NULL, `column2` INT(11) NULL, PRIMARY KEY (`column1`)) ENGINE = InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 INSERT INTO `table1` (`column1`, `column2`) VALUES ('id1', 1);
 OUTPUT;
         $actualOutput = join("\n", $this->out->messages());

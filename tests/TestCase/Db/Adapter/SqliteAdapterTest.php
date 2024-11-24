@@ -1710,6 +1710,37 @@ class SqliteAdapterTest extends TestCase
         $this->assertNull($rows[3]['column2']);
     }
 
+    public function testBulkInsertLiteral()
+    {
+        $data = [
+            [
+                'column1' => 'value1',
+                'column2' => Literal::from('CURRENT_TIMESTAMP'),
+            ],
+            [
+                'column1' => 'value2',
+                'column2' => '2024-01-01 00:00:00',
+            ],
+            [
+                'column1' => 'value3',
+                'column2' => '2025-01-01 00:00:00',
+            ],
+        ];
+        $table = new Table('table1', [], $this->adapter);
+        $table->addColumn('column1', 'string')
+            ->addColumn('column2', 'datetime')
+            ->insert($data)
+            ->save();
+
+        $rows = $this->adapter->fetchAll('SELECT * FROM table1');
+        $this->assertEquals('value1', $rows[0]['column1']);
+        $this->assertEquals('value2', $rows[1]['column1']);
+        $this->assertEquals('value3', $rows[2]['column1']);
+        $this->assertMatchesRegularExpression('/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}/', $rows[0]['column2']);
+        $this->assertEquals('2024-01-01 00:00:00', $rows[1]['column2']);
+        $this->assertEquals('2025-01-01 00:00:00', $rows[2]['column2']);
+    }
+
     public function testInsertData()
     {
         $table = new Table('table1', [], $this->adapter);
@@ -1749,6 +1780,42 @@ class SqliteAdapterTest extends TestCase
         $this->assertEquals(2, $rows[1]['column2']);
         $this->assertEquals(3, $rows[2]['column2']);
         $this->assertNull($rows[3]['column2']);
+    }
+
+    public function testInsertLiteral()
+    {
+        $data = [
+            [
+                'column1' => 'value1',
+                'column3' => Literal::from('CURRENT_TIMESTAMP'),
+            ],
+            [
+                'column1' => 'value2',
+                'column3' => '2024-01-01 00:00:00',
+            ],
+            [
+                'column1' => 'value3',
+                'column2' => 'foo',
+                'column3' => '2025-01-01 00:00:00',
+            ],
+        ];
+        $table = new Table('table1', [], $this->adapter);
+        $table->addColumn('column1', 'string')
+            ->addColumn('column2', 'string', ['default' => 'test'])
+            ->addColumn('column3', 'datetime')
+            ->insert($data)
+            ->save();
+
+        $rows = $this->adapter->fetchAll('SELECT * FROM table1');
+        $this->assertEquals('value1', $rows[0]['column1']);
+        $this->assertEquals('value2', $rows[1]['column1']);
+        $this->assertEquals('value3', $rows[2]['column1']);
+        $this->assertEquals('test', $rows[0]['column2']);
+        $this->assertEquals('test', $rows[1]['column2']);
+        $this->assertEquals('foo', $rows[2]['column2']);
+        $this->assertMatchesRegularExpression('/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}/', $rows[0]['column3']);
+        $this->assertEquals('2024-01-01 00:00:00', $rows[1]['column3']);
+        $this->assertEquals('2025-01-01 00:00:00', $rows[2]['column3']);
     }
 
     public function testBulkInsertDataEnum()
@@ -1808,7 +1875,7 @@ class SqliteAdapterTest extends TestCase
 
     public function testDumpCreateTable()
     {
-        $this->adapter->setOptions(['dryrun' => true]);
+        $this->adapter->setOptions($this->adapter->getOptions() + ['dryrun' => true]);
         $table = new Table('table1', [], $this->adapter);
 
         $table->addColumn('column1', 'string', ['null' => false])
@@ -1835,7 +1902,7 @@ OUTPUT;
             ->addColumn('int_col', 'integer')
             ->save();
 
-        $this->adapter->setOptions(['dryrun' => true]);
+        $this->adapter->setOptions($this->adapter->getOptions() + ['dryrun' => true]);
         $this->adapter->insert($table->getTable(), [
             'string_col' => 'test data',
         ]);
@@ -1875,7 +1942,7 @@ OUTPUT;
             ->addColumn('int_col', 'integer')
             ->save();
 
-        $this->adapter->setOptions(['dryrun' => true]);
+        $this->adapter->setOptions($this->adapter->getOptions() + ['dryrun' => true]);
         $this->adapter->bulkinsert($table->getTable(), [
             [
                 'string_col' => 'test_data1',
@@ -1901,7 +1968,7 @@ OUTPUT;
 
     public function testDumpCreateTableAndThenInsert()
     {
-        $this->adapter->setOptions(['dryrun' => true]);
+        $this->adapter->setOptions($this->adapter->getOptions() + ['dryrun' => true]);
         $table = new Table('table1', ['id' => false, 'primary_key' => ['column1']], $this->adapter);
 
         $table->addColumn('column1', 'string', ['null' => false])
@@ -2019,8 +2086,8 @@ OUTPUT;
             ['name' => 'string_col', 'type' => 'string', 'default' => '', 'null' => true],
             ['name' => 'string_col_2', 'type' => 'string', 'default' => null, 'null' => true],
             ['name' => 'string_col_3', 'type' => 'string', 'default' => null, 'null' => false],
-            ['name' => 'created_at', 'type' => 'timestamp', 'default' => 'CURRENT_TIMESTAMP', 'null' => false],
-            ['name' => 'updated_at', 'type' => 'timestamp', 'default' => null, 'null' => true],
+            ['name' => 'created', 'type' => 'timestamp', 'default' => 'CURRENT_TIMESTAMP', 'null' => false],
+            ['name' => 'updated', 'type' => 'timestamp', 'default' => null, 'null' => true],
         ];
 
         $this->assertEquals(count($expected), count($columns));

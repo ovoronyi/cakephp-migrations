@@ -14,17 +14,15 @@ use DateTime;
 use Exception;
 use InvalidArgumentException;
 use Migrations\Config\ConfigInterface;
-use Migrations\Shim\OutputAdapter;
-use Phinx\Migration\AbstractMigration;
-use Phinx\Migration\MigrationInterface;
-use Phinx\Seed\AbstractSeed;
-use Phinx\Seed\SeedInterface;
-use Phinx\Util\Util;
+use Migrations\MigrationInterface;
+use Migrations\SeedInterface;
+use Migrations\Shim\MigrationAdapter;
+use Migrations\Shim\SeedAdapter;
+use Migrations\Util\Util;
+use Phinx\Migration\MigrationInterface as PhinxMigrationInterface;
+use Phinx\Seed\SeedInterface as PhinxSeedInterface;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Input\InputDefinition;
-use Symfony\Component\Console\Input\InputOption;
 
 class Manager
 {
@@ -48,12 +46,12 @@ class Manager
     protected ?Environment $environment;
 
     /**
-     * @var \Phinx\Migration\MigrationInterface[]|null
+     * @var \Migrations\MigrationInterface[]|null
      */
     protected ?array $migrations = null;
 
     /**
-     * @var \Phinx\Seed\SeedInterface[]|null
+     * @var \Migrations\SeedInterface[]|null
      */
     protected ?array $seeds = null;
 
@@ -256,14 +254,22 @@ class Manager
         }
 
         $migrationFile = $migrationFile[0];
-        /** @var class-string<\Phinx\Migration\MigrationInterface> $className */
+        /** @var class-string<\Phinx\Migration\MigrationInterface|\Migrations\MigrationInterface> $className */
         $className = $this->getMigrationClassName($migrationFile);
         require_once $migrationFile;
-        $Migration = new $className('default', $version);
+
+        if (is_subclass_of($className, PhinxMigrationInterface::class)) {
+            $migration = new MigrationAdapter($className, $version);
+        } else {
+            $migration = new $className($version);
+        }
+        /** @var \Migrations\MigrationInterface $migration */
+        $config = $this->getConfig();
+        $migration->setConfig($config);
 
         $time = date('Y-m-d H:i:s', time());
 
-        $adapter->migrated($Migration, 'up', $time, $time);
+        $adapter->migrated($migration, 'up', $time, $time);
 
         return true;
     }
@@ -442,7 +448,7 @@ class Manager
     /**
      * Execute a migration against the specified environment.
      *
-     * @param \Phinx\Migration\MigrationInterface $migration Migration
+     * @param \Migrations\MigrationInterface $migration Migration
      * @param string $direction Direction
      * @param bool $fake flag that if true, we just record running the migration, but not actually do the migration
      * @return void
@@ -475,7 +481,7 @@ class Manager
     /**
      * Execute a seeder against the specified environment.
      *
-     * @param \Phinx\Seed\SeedInterface $seed Seed
+     * @param \Migrations\SeedInterface $seed Seed
      * @return void
      */
     public function executeSeed(SeedInterface $seed): void
@@ -506,7 +512,7 @@ class Manager
     /**
      * Print Migration Status
      *
-     * @param \Phinx\Migration\MigrationInterface $migration Migration
+     * @param \Migrations\MigrationInterface $migration Migration
      * @param string $status Status of the migration
      * @param string|null $duration Duration the migration took the be executed
      * @return void
@@ -523,7 +529,7 @@ class Manager
     /**
      * Print Seed Status
      *
-     * @param \Phinx\Seed\SeedInterface $seed Seed
+     * @param \Migrations\SeedInterface $seed Seed
      * @param string $status Status of the seed
      * @param string|null $duration Duration the seed took the be executed
      * @return void
@@ -772,7 +778,7 @@ class Manager
     /**
      * Sets the database migrations.
      *
-     * @param \Phinx\Migration\AbstractMigration[] $migrations Migrations
+     * @param \Migrations\MigrationInterface[] $migrations Migrations
      * @return $this
      */
     public function setMigrations(array $migrations)
@@ -787,7 +793,7 @@ class Manager
      * order
      *
      * @throws \InvalidArgumentException
-     * @return \Phinx\Migration\MigrationInterface[]
+     * @return \Migrations\MigrationInterface[]
      */
     public function getMigrations(): array
     {
@@ -807,7 +813,7 @@ class Manager
 
             // filter the files to only get the ones that match our naming scheme
             $fileNames = [];
-            /** @var \Phinx\Migration\AbstractMigration[] $versions */
+            /** @var \Migrations\MigrationInterface[] $versions */
             $versions = [];
 
             $io = $this->getIo();
@@ -851,25 +857,15 @@ class Manager
                     }
 
                     $io->verbose("Constructing <info>$class</info>.");
-
-                    $config = $this->getConfig();
-                    $input = new ArrayInput([
-                        '--plugin' => $config['plugin'] ?? null,
-                        '--source' => $config['source'] ?? null,
-                        '--connection' => $config->getConnection(),
-                    ]);
-                    $output = new OutputAdapter($io);
-
-                    // instantiate it
-                    $migration = new $class('default', $version, $input, $output);
-
-                    if (!($migration instanceof AbstractMigration)) {
-                        throw new InvalidArgumentException(sprintf(
-                            'The class "%s" in file "%s" must extend \Phinx\Migration\AbstractMigration',
-                            $class,
-                            $filePath
-                        ));
+                    if (is_subclass_of($class, PhinxMigrationInterface::class)) {
+                        $migration = new MigrationAdapter($class, $version);
+                    } else {
+                        $migration = new $class($version);
                     }
+                    /** @var \Migrations\MigrationInterface $migration */
+                    $config = $this->getConfig();
+                    $migration->setConfig($config);
+                    $migration->setIo($io);
 
                     $versions[$version] = $migration;
                 } else {
@@ -897,7 +893,7 @@ class Manager
     /**
      * Sets the database seeders.
      *
-     * @param \Phinx\Seed\SeedInterface[] $seeds Seeders
+     * @param \Migrations\SeedInterface[] $seeds Seeders
      * @return $this
      */
     public function setSeeds(array $seeds)
@@ -910,8 +906,8 @@ class Manager
     /**
      * Get seed dependencies instances from seed dependency array
      *
-     * @param \Phinx\Seed\SeedInterface $seed Seed
-     * @return \Phinx\Seed\SeedInterface[]
+     * @param \Migrations\SeedInterface $seed Seed
+     * @return \Migrations\SeedInterface[]
      */
     protected function getSeedDependenciesInstances(SeedInterface $seed): array
     {
@@ -920,8 +916,9 @@ class Manager
         if (!empty($dependencies) && !empty($this->seeds)) {
             foreach ($dependencies as $dependency) {
                 foreach ($this->seeds as $seed) {
-                    if (get_class($seed) === $dependency) {
-                        $dependenciesInstances[get_class($seed)] = $seed;
+                    $name = $seed->getName();
+                    if ($name === $dependency) {
+                        $dependenciesInstances[$name] = $seed;
                     }
                 }
             }
@@ -933,14 +930,15 @@ class Manager
     /**
      * Order seeds by dependencies
      *
-     * @param \Phinx\Seed\SeedInterface[] $seeds Seeds
-     * @return \Phinx\Seed\SeedInterface[]
+     * @param \Migrations\SeedInterface[] $seeds Seeds
+     * @return \Migrations\SeedInterface[]
      */
     protected function orderSeedsByDependencies(array $seeds): array
     {
         $orderedSeeds = [];
         foreach ($seeds as $seed) {
-            $orderedSeeds[get_class($seed)] = $seed;
+            $name = $seed->getName();
+            $orderedSeeds[$name] = $seed;
             $dependencies = $this->getSeedDependenciesInstances($seed);
             if (!empty($dependencies)) {
                 $orderedSeeds = array_merge($this->orderSeedsByDependencies($dependencies), $orderedSeeds);
@@ -954,7 +952,7 @@ class Manager
      * Gets an array of database seeders.
      *
      * @throws \InvalidArgumentException
-     * @return \Phinx\Seed\SeedInterface[]
+     * @return \Migrations\SeedInterface[]
      */
     public function getSeeds(): array
     {
@@ -963,21 +961,11 @@ class Manager
 
             // filter the files to only get the ones that match our naming scheme
             $fileNames = [];
-            /** @var \Phinx\Seed\SeedInterface[] $seeds */
+            /** @var \Migrations\SeedInterface[] $seeds */
             $seeds = [];
 
             $config = $this->getConfig();
-            $optionDef = new InputDefinition([
-                new InputOption('plugin', mode: InputOption::VALUE_OPTIONAL, default: ''),
-                new InputOption('connection', mode: InputOption::VALUE_OPTIONAL, default: ''),
-                new InputOption('source', mode: InputOption::VALUE_OPTIONAL, default: ''),
-            ]);
-            $input = new ArrayInput([
-                '--plugin' => $config['plugin'] ?? null,
-                '--source' => $config['source'] ?? null,
-                '--connection' => $config->getConnection(),
-            ], $optionDef);
-            $output = new OutputAdapter($this->io);
+            $io = $this->getIo();
 
             foreach ($phpFiles as $filePath) {
                 if (Util::isValidSeedFileName(basename($filePath))) {
@@ -997,23 +985,20 @@ class Manager
                     }
 
                     // instantiate it
-                    /** @var \Phinx\Seed\AbstractSeed $seed */
+                    /** @var \Phinx\Seed\AbstractSeed|\Migrations\SeedInterface $seed */
                     if (isset($this->container)) {
                         $seed = $this->container->get($class);
                     } else {
                         $seed = new $class();
                     }
-                    $seed->setEnvironment('default');
-                    $seed->setInput($input);
-                    $seed->setOutput($output);
-
-                    if (!($seed instanceof AbstractSeed)) {
-                        throw new InvalidArgumentException(sprintf(
-                            'The class "%s" in file "%s" must extend \Phinx\Seed\AbstractSeed',
-                            $class,
-                            $filePath
-                        ));
+                    // Shim phinx seeds so that the rest of migrations
+                    // can be isolated from phinx.
+                    if ($seed instanceof PhinxSeedInterface) {
+                        $seed = new SeedAdapter($seed);
                     }
+                    /** @var \Migrations\SeedInterface $seed */
+                    $seed->setIo($io);
+                    $seed->setConfig($config);
 
                     $seeds[$class] = $seed;
                 }
@@ -1025,12 +1010,6 @@ class Manager
         $this->seeds = $this->orderSeedsByDependencies((array)$this->seeds);
         if (empty($this->seeds)) {
             return [];
-        }
-
-        foreach ($this->seeds as $instance) {
-            if (isset($input) && $instance instanceof AbstractSeed) {
-                $instance->setInput($input);
-            }
         }
 
         return $this->seeds;

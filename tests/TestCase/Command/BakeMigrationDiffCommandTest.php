@@ -13,6 +13,7 @@ declare(strict_types=1);
  */
 namespace Migrations\Test\TestCase\Command;
 
+use Cake\Cache\Cache;
 use Cake\Console\BaseCommand;
 use Cake\Core\Configure;
 use Cake\Core\Plugin;
@@ -45,6 +46,7 @@ class BakeMigrationDiffCommandTest extends TestCase
         parent::setUp();
 
         $this->generatedFiles = [];
+        Configure::write('Migrations.backend', 'builtin');
     }
 
     public function tearDown(): void
@@ -54,6 +56,15 @@ class BakeMigrationDiffCommandTest extends TestCase
             if (file_exists($file)) {
                 unlink($file);
             }
+        }
+        if (env('DB_URL_COMPARE')) {
+            // Clean up the comparison database each time. Table order is important.
+            $connection = ConnectionManager::get('test_comparisons');
+            $tables = ['articles', 'categories', 'comments', 'users', 'phinxlog'];
+            foreach ($tables as $table) {
+                $connection->execute("DROP TABLE IF EXISTS $table");
+            }
+            Cache::clear('_cake_model_');
         }
     }
 
@@ -206,7 +217,8 @@ class BakeMigrationDiffCommandTest extends TestCase
             $destinationDumpPath,
         ];
 
-        $this->getMigrations("MigrationsDiff$scenario")->migrate();
+        $migrations = $this->getMigrations("MigrationsDiff$scenario");
+        $migrations->migrate();
 
         unlink($destination);
         copy($diffDumpPath, $destinationDumpPath);

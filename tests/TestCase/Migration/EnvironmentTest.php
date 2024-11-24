@@ -8,6 +8,8 @@ use Cake\Datasource\ConnectionManager;
 use Migrations\Db\Adapter\AdapterWrapper;
 use Migrations\Db\Adapter\PdoAdapter;
 use Migrations\Migration\Environment;
+use Migrations\Shim\MigrationAdapter;
+use Migrations\Shim\SeedAdapter;
 use Phinx\Migration\AbstractMigration;
 use Phinx\Migration\MigrationInterface;
 use Phinx\Seed\AbstractSeed;
@@ -129,7 +131,8 @@ class EnvironmentTest extends TestCase
             }
         };
 
-        $this->environment->executeMigration($upMigration, MigrationInterface::UP);
+        $migrationWrapper = new MigrationAdapter($upMigration, $upMigration->getVersion());
+        $this->environment->executeMigration($migrationWrapper, MigrationInterface::UP);
         $this->assertTrue($upMigration->executed);
     }
 
@@ -154,7 +157,8 @@ class EnvironmentTest extends TestCase
             }
         };
 
-        $this->environment->executeMigration($downMigration, MigrationInterface::DOWN);
+        $migrationWrapper = new MigrationAdapter($downMigration, $downMigration->getVersion());
+        $this->environment->executeMigration($migrationWrapper, MigrationInterface::DOWN);
         $this->assertTrue($downMigration->executed);
     }
 
@@ -170,7 +174,7 @@ class EnvironmentTest extends TestCase
         $adapterStub->expects($this->once())
                     ->method('commitTransaction');
 
-        $adapterStub->expects($this->exactly(1))
+        $adapterStub->expects($this->atLeastOnce())
                     ->method('hasTransactions')
                     ->willReturn(true);
 
@@ -185,7 +189,8 @@ class EnvironmentTest extends TestCase
             }
         };
 
-        $this->environment->executeMigration($migration, MigrationInterface::UP);
+        $migrationWrapper = new MigrationAdapter($migration, $migration->getVersion());
+        $this->environment->executeMigration($migrationWrapper, MigrationInterface::UP);
         $this->assertTrue($migration->executed);
     }
 
@@ -201,7 +206,7 @@ class EnvironmentTest extends TestCase
         $adapterStub->expects($this->never())
                     ->method('commitTransaction');
 
-        $adapterStub->expects($this->exactly(1))
+        $adapterStub->expects($this->atLeastOnce())
                     ->method('hasTransactions')
                     ->willReturn(true);
 
@@ -222,7 +227,8 @@ class EnvironmentTest extends TestCase
             }
         };
 
-        $this->environment->executeMigration($migration, MigrationInterface::UP);
+        $migrationWrapper = new MigrationAdapter($migration, $migration->getVersion());
+        $this->environment->executeMigration($migrationWrapper, MigrationInterface::UP);
         $this->assertTrue($migration->executed);
     }
 
@@ -247,7 +253,8 @@ class EnvironmentTest extends TestCase
             }
         };
 
-        $this->environment->executeMigration($migration, MigrationInterface::UP);
+        $migrationWrapper = new MigrationAdapter($migration, $migration->getVersion());
+        $this->environment->executeMigration($migrationWrapper, MigrationInterface::UP);
         $this->assertTrue($migration->executed);
     }
 
@@ -272,7 +279,8 @@ class EnvironmentTest extends TestCase
             }
         };
 
-        $this->environment->executeMigration($migration, MigrationInterface::DOWN);
+        $migrationWrapper = new MigrationAdapter($migration, $migration->getVersion());
+        $this->environment->executeMigration($migrationWrapper, MigrationInterface::DOWN);
         $this->assertTrue($migration->executed);
     }
 
@@ -297,7 +305,8 @@ class EnvironmentTest extends TestCase
             }
         };
 
-        $this->environment->executeMigration($migration, MigrationInterface::UP, true);
+        $migrationWrapper = new MigrationAdapter($migration, $migration->getVersion());
+        $this->environment->executeMigration($migrationWrapper, MigrationInterface::UP, true);
         $this->assertFalse($migration->executed);
     }
 
@@ -336,8 +345,8 @@ class EnvironmentTest extends TestCase
                 $this->upExecuted = true;
             }
         };
-
-        $this->environment->executeMigration($upMigration, MigrationInterface::UP);
+        $migrationWrapper = new MigrationAdapter($upMigration, $upMigration->getVersion());
+        $this->environment->executeMigration($migrationWrapper, MigrationInterface::UP);
         $this->assertTrue($upMigration->initExecuted);
         $this->assertTrue($upMigration->upExecuted);
     }
@@ -351,7 +360,6 @@ class EnvironmentTest extends TestCase
 
         $this->environment->setAdapter($adapterStub);
 
-        // up
         $seed = new class ('mockenv', 20110301080000) extends AbstractSeed {
             public bool $initExecuted = false;
             public bool $runExecuted = false;
@@ -367,7 +375,9 @@ class EnvironmentTest extends TestCase
             }
         };
 
-        $this->environment->executeSeed($seed);
+        $seedWrapper = new SeedAdapter($seed);
+        $this->environment->executeSeed($seedWrapper);
+
         $this->assertTrue($seed->initExecuted);
         $this->assertTrue($seed->runExecuted);
     }

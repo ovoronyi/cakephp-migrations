@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-use Migrations\AbstractMigration;
+use Migrations\BaseMigration;
 
-class TestSnapshotAutoIdDisabledSqlserver extends AbstractMigration
+class TestSnapshotAutoIdDisabledSqlserver extends BaseMigration
 {
     public bool $autoId = false;
 
