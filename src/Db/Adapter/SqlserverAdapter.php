@@ -252,7 +252,7 @@ class SqlserverAdapter extends PdoAdapter
     }
 
     /**
-     * Gets the SqlServer Column Comment Defininition for a column object.
+     * Gets the SqlServer column comment definition for a column object.
      *
      * @param \Migrations\Db\Table\Column $column Column
      * @param ?string $tableName Table name
@@ -625,7 +625,7 @@ WHERE
      * @param string $indexId Index ID
      * @return array
      */
-    protected function getIndexColums(string $tableId, string $indexId): array
+    protected function getIndexColumns(string $tableId, string $indexId): array
     {
         $sql = "SELECT AC.[name] AS [column_name]
 FROM sys.[index_columns] IC
@@ -659,7 +659,7 @@ ORDER BY T.[name], I.[index_id];";
 
         $rows = $this->fetchAll($sql);
         foreach ($rows as $row) {
-            $columns = $this->getIndexColums($row['table_id'], $row['index_id']);
+            $columns = $this->getIndexColumns($row['table_id'], $row['index_id']);
             $indexes[$row['index_name']] = ['columns' => $columns];
         }
 
